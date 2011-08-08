@@ -8,7 +8,7 @@
     <ProjectGuid>{702C0FCC-ACDA-40A9-80D2-C9F19CF1CD2D}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>arq</RootNamespace>
+    <RootNamespace>VersionOne.arq</RootNamespace>
     <AssemblyName>arq</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
