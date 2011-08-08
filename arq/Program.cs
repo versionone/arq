@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Configuration;
 using System.IO;
 using System.Linq;
@@ -7,14 +9,28 @@ using System.Web.Mvc;
 using Spark;
 using Spark.FileSystem;
 using Spark.Web.Mvc;
+using MadProps.AppArgs;
 
-namespace SparkCompiler
+namespace VersionOne.arq
 {
-	internal class Program
+	class Arguments
 	{
-		private static void Main(string[] args)
+		[Required, Description("the assembly containing MVC controllers")]
+		public string Source { get; set; }
+	}
+
+	class CompileInvoker
+	{
+		private readonly Arguments _arguments;
+
+		public CompileInvoker(Arguments arguments)
 		{
-			string sourceAsmFilename = "C:\\Dev\\Core\\VersionOne.Web\\bin\\VersionOne.Web.dll";
+			_arguments = arguments;
+		}
+		public void Run() 
+		{
+
+			string sourceAsmFilename = Path.GetFullPath(_arguments.Source);
 			if (!File.Exists(sourceAsmFilename))
 				throw new FileNotFoundException("No such file", sourceAsmFilename);
 			Install(GetAssembly(sourceAsmFilename));
@@ -59,9 +75,7 @@ namespace SparkCompiler
 
 			try
 			{
-				//var sparkViewDescriptors = sparkViewFactory.CreateDescriptors(batch);
 				sparkViewFactory.Precompile(batch);
-				//sparkViewFactory.Engine.BatchCompilation(batch.OutputAssembly, CreateDescriptors(batch));
 			}
 			catch (Exception e)
 			{
@@ -76,6 +90,39 @@ namespace SparkCompiler
 				.GetTypes()
 				.Where(type => type.IsSubclassOf(typeof (Controller))).ToList()
 				.ForEach(controllerType => batch.For(controllerType));
+		}
+	}
+
+	internal class Program
+	{
+		private static void Main(string[] args)
+		{
+			Arguments arguments;
+
+			if (!TryGetArguments(args, out arguments))
+				return;
+				
+			new CompileInvoker(arguments).Run();
+		}
+
+		private static bool TryGetArguments(string[] args, out Arguments arguments)
+		{
+			try
+			{
+				arguments = args.As<Arguments>();
+				return true;
+			}
+			catch (Exception ex)
+			{
+				arguments = null;
+
+				Console.WriteLine(ex.Message);
+				Console.WriteLine();
+				var usage = AppArgs.HelpFor<Arguments>();
+				Console.Write(usage);
+
+				return false;
+			}
 		}
 	}
 }
