@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "arq", "arq\arq.csproj", "{702C0FCC-ACDA-40A9-80D2-C9F19CF1CD2D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FD53E183-1D8C-44CC-8FB3-CAB18AF8D31D}"
+	ProjectSection(SolutionItems) = preProject
+		rakefile.rb = rakefile.rb
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{702C0FCC-ACDA-40A9-80D2-C9F19CF1CD2D}.Debug|x86.ActiveCfg = Debug|x86
+		{702C0FCC-ACDA-40A9-80D2-C9F19CF1CD2D}.Debug|x86.Build.0 = Debug|x86
+		{702C0FCC-ACDA-40A9-80D2-C9F19CF1CD2D}.Release|x86.ActiveCfg = Release|x86
+		{702C0FCC-ACDA-40A9-80D2-C9F19CF1CD2D}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
