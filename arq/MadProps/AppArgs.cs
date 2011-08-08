@@ -224,23 +224,11 @@ namespace MadProps.AppArgs
         }
     }
 
-	internal class DisplayAttribute
-	{
-		public string Description { get; set; }
-
-		public string ShortName { get; set; }
-	}
-
 	public static class PropertyInfoExtensions
     {
         public static T Attribute<T>(this PropertyInfo p)
         {
             return p.GetCustomAttributes(typeof(T), true).Cast<T>().FirstOrDefault();
         }
-
-		public static bool IsNullOrWhiteSpace(this string s)
-		{
-			return s == null || s.Trim().Length == 0;
-		}
     }
 }
