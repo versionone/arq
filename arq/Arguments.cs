@@ -32,6 +32,9 @@ namespace VersionOne.arq
 			set { _config = value; }
 		}
 
+		[Description("fully namespaced public static void <value>(SparkBatchDescriptor) in <input> dll to call for custom rules")]
+		public string Rules { get; set; }
+
 		internal string InputPath
 		{
 			get { return Path.GetDirectoryName(InputFilePath); }
