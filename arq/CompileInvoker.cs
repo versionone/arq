@@ -43,20 +43,18 @@ namespace VersionOne.arq
 
 		public void Install(Assembly sourceAsm)
 		{
-			string asmPath = sourceAsm.Location;
-			string projectPath = Path.GetDirectoryName(Path.GetDirectoryName(asmPath));
 			ISparkSettings settings;
 			{
-				string str = Path.Combine(projectPath, "web");
-				File.Create(str).Close();
-				Configuration configuration = ConfigurationManager.OpenExeConfiguration(str);
-				File.Delete(str);
-				settings = (ISparkSettings) configuration.GetSection("spark");
+				var map = new ExeConfigurationFileMap();
+				map.ExeConfigFilename = EnsureFileExists(_arguments.Config);
+				var config = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
+				
+				settings = (ISparkSettings) config.GetSection("spark");
 			}
 
 			var sparkViewFactory = new SparkViewFactory(settings)
 			                       	{
-			                       		ViewFolder = new FileSystemViewFolder(EnsureDirectoryExists(_arguments.Views, "Views"))
+			                       		ViewFolder = new FileSystemViewFolder(EnsureDirectoryExists(_arguments.Views))
 			                       	};
 			var batch = new SparkBatchDescriptor(GetOutputDllFullPath());
 			batch.FromAssembly(sourceAsm);
@@ -73,16 +71,23 @@ namespace VersionOne.arq
 			}
 		}
 
-		private string EnsureDirectoryExists(string directoryPath, string directoryName)
+		private string EnsureFileExists(string filePath)
+		{
+			if (!File.Exists(filePath))
+				throw new FileNotFoundException(filePath);
+			return filePath;
+		}
+
+		private string EnsureDirectoryExists(string directoryPath)
 		{
 			if (!Directory.Exists(directoryPath))
-				throw new DirectoryNotFoundException(string.Format("{0} folder not found: {1}", directoryName, directoryPath));
+				throw new DirectoryNotFoundException(directoryPath);
 			return directoryPath;
 		}
 
 		private string GetOutputDllFullPath()
 		{
-			return Path.Combine(EnsureDirectoryExists(_arguments.OutputPath, "Output"), _arguments.OutputName);
+			return Path.Combine(EnsureDirectoryExists(_arguments.OutputPath), _arguments.OutputName);
 		}
 
 		private static void DescribeSparkViews(SparkBatchDescriptor batch, Assembly sourceAsm)

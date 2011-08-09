@@ -23,6 +23,15 @@ namespace VersionOne.arq
 			set { _views = value; }
 		}
 
+		private string _config;
+
+		[Description("path to the config that contains spark settings relative to <input> (defaults to ..\\web.config) ")]
+		public string Config
+		{
+			get { return Path.GetFullPath(Path.Combine(InputPath, _config ?? "..\\web.config")); }
+			set { _config = value; }
+		}
+
 		internal string InputPath
 		{
 			get { return Path.GetDirectoryName(Path.GetFullPath(Input)); }
