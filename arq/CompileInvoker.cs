@@ -18,12 +18,12 @@ namespace VersionOne.arq
 		{
 			_arguments = arguments;
 		}
-		public void Run() 
-		{
 
+		public void Run()
+		{
 			string sourceAsmFilename = Path.GetFullPath(_arguments.Source);
 			if (!File.Exists(sourceAsmFilename))
-				throw new FileNotFoundException("No such file", sourceAsmFilename);
+				throw new FileNotFoundException("Input DLL not found", sourceAsmFilename);
 			Install(GetAssembly(sourceAsmFilename));
 		}
 
@@ -41,13 +41,11 @@ namespace VersionOne.arq
 			return Assembly.LoadFile(filename);
 		}
 
-		public static void Install(Assembly sourceAsm)
+		public void Install(Assembly sourceAsm)
 		{
 			string asmPath = sourceAsm.Location;
-			string targetAsmFilename = Path.ChangeExtension(asmPath, ".Views.dll");
 			string projectPath = Path.GetDirectoryName(Path.GetDirectoryName(asmPath));
 			string viewsPath = Path.Combine(projectPath, "IceNine\\Views");
-			targetAsmFilename = Path.Combine(asmPath, targetAsmFilename);
 			ISparkSettings settings;
 			{
 				string str = Path.Combine(projectPath, "web");
@@ -60,7 +58,7 @@ namespace VersionOne.arq
 			                       	{
 			                       		ViewFolder = new FileSystemViewFolder(viewsPath)
 			                       	};
-			var batch = new SparkBatchDescriptor(targetAsmFilename);
+			var batch = new SparkBatchDescriptor(GetOutputDllFullPath());
 			batch.FromAssembly(sourceAsm);
 			DescribeSparkViews(batch, sourceAsm);
 
@@ -73,6 +71,13 @@ namespace VersionOne.arq
 				File.WriteAllText("SparkCompile.log.txt", e.Message);
 				throw new Exception("Compilation failed.  See log file for details", e);
 			}
+		}
+
+		private string GetOutputDllFullPath()
+		{
+			if (!Directory.Exists(_arguments.OutputPath))
+				throw new DirectoryNotFoundException("Output folder not found: " + _arguments.OutputPath);
+			return Path.Combine(_arguments.OutputPath, _arguments.OutputName);
 		}
 
 		private static void DescribeSparkViews(SparkBatchDescriptor batch, Assembly sourceAsm)
