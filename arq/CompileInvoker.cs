@@ -21,10 +21,7 @@ namespace VersionOne.arq
 
 		public void Run()
 		{
-			string sourceAsmFilename = Path.GetFullPath(_arguments.Input);
-			if (!File.Exists(sourceAsmFilename))
-				throw new FileNotFoundException("Input DLL not found", sourceAsmFilename);
-			Install(GetAssembly(sourceAsmFilename));
+			Compile(GetAssembly(EnsureFileExists(_arguments.InputFilePath)));
 		}
 
 		private static Assembly GetAssembly(string filename)
@@ -41,18 +38,9 @@ namespace VersionOne.arq
 			return Assembly.LoadFile(filename);
 		}
 
-		public void Install(Assembly sourceAsm)
+		public void Compile(Assembly sourceAsm)
 		{
-			ISparkSettings settings;
-			{
-				var map = new ExeConfigurationFileMap();
-				map.ExeConfigFilename = EnsureFileExists(_arguments.Config);
-				var config = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
-				
-				settings = (ISparkSettings) config.GetSection("spark");
-			}
-
-			var sparkViewFactory = new SparkViewFactory(settings)
+			var sparkViewFactory = new SparkViewFactory(GetSparkSettings())
 			                       	{
 			                       		ViewFolder = new FileSystemViewFolder(EnsureDirectoryExists(_arguments.Views))
 			                       	};
@@ -69,6 +57,14 @@ namespace VersionOne.arq
 				File.WriteAllText("SparkCompile.log.txt", e.Message);
 				throw new Exception("Compilation failed.  See log file for details", e);
 			}
+		}
+
+		private ISparkSettings GetSparkSettings()
+		{
+			var map = new ExeConfigurationFileMap {ExeConfigFilename = EnsureFileExists(_arguments.Config)};
+			var config = ConfigurationManager.OpenMappedExeConfiguration(map, ConfigurationUserLevel.None);
+
+			return (ISparkSettings) config.GetSection("spark");
 		}
 
 		private string EnsureFileExists(string filePath)

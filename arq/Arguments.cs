@@ -34,7 +34,12 @@ namespace VersionOne.arq
 
 		internal string InputPath
 		{
-			get { return Path.GetDirectoryName(Path.GetFullPath(Input)); }
+			get { return Path.GetDirectoryName(InputFilePath); }
+		}
+
+		internal string InputFilePath
+		{
+			get { return Path.GetFullPath(Input); }
 		}
 
 		internal string InputName
