@@ -1,0 +1,1 @@
+Use this tool to generate a dll that contains precompiled spark views. Load the precompiled views in your web project for MAXXTREMEPERFORMANCE!
