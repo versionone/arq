@@ -1,6 +1,8 @@
 
 require 'albacore'
 
+task :default => :compile
+
 desc "Compiles the solution."
 msbuild :compile do |msb|
   
