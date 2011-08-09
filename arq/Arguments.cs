@@ -8,35 +8,39 @@ namespace VersionOne.arq
 	class Arguments
 	{
 		[Required, Description("the assembly containing MVC controllers")]
-		public string Source { get; set; }
+		public string Input { get; set; }
 
-		private string _output;
 
 		[Description("name of output assembly (defaults to <input>.Views.dll")]
-		public string Output
+		public string Output { private get; set; }
+
+		private string _views;
+
+		[Description("path to the MVC views folder relative to <input> (defaults to ..\\views) ")]
+		public string Views
 		{
-			get { return _output ?? Path.GetFileNameWithoutExtension(Source) + ".Views.dll"; }
-			set { _output = value; }
+			get { return Path.GetFullPath(Path.Combine(InputPath, _views ?? "..\\views")); }
+			set { _views = value; }
 		}
 
-		internal string SourcePath
+		internal string InputPath
 		{
-			get { return Path.GetDirectoryName(Path.GetFullPath(Source)); }
+			get { return Path.GetDirectoryName(Path.GetFullPath(Input)); }
 		}
 
-		internal string SourceName
+		internal string InputName
 		{
-			get { return Path.GetFileName(Source); }
+			get { return Path.GetFileName(Input); }
 		}
 
 		internal string OutputPath
 		{
 			get
 			{
-				if (_output == null) return SourcePath;
-				var path = _output;
+				if (Output == null) return InputPath;
+				var path = Output;
 				if (!Path.IsPathRooted(path))
-					path = Path.Combine(SourcePath, path);
+					path = Path.Combine(InputPath, path);
 				if (path.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase))
 					path = Path.GetDirectoryName(path);
 				return Path.GetFullPath(path);
@@ -47,9 +51,9 @@ namespace VersionOne.arq
 		{
 			get
 			{
-				if (_output == null || !_output.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase)) 
-					return Path.ChangeExtension(SourceName, ".Views.dll");
-				return Path.GetFileName(_output);
+				if (Output == null || !Output.EndsWith(".dll", StringComparison.InvariantCultureIgnoreCase)) 
+					return Path.ChangeExtension(InputName, ".Views.dll");
+				return Path.GetFileName(Output);
 			}
 		}
 	}
