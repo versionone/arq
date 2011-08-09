@@ -56,7 +56,7 @@ namespace VersionOne.arq
 
 			var sparkViewFactory = new SparkViewFactory(settings)
 			                       	{
-			                       		ViewFolder = new FileSystemViewFolder(GetViewsPath())
+			                       		ViewFolder = new FileSystemViewFolder(EnsureDirectoryExists(_arguments.Views, "Views"))
 			                       	};
 			var batch = new SparkBatchDescriptor(GetOutputDllFullPath());
 			batch.FromAssembly(sourceAsm);
@@ -73,18 +73,16 @@ namespace VersionOne.arq
 			}
 		}
 
-		private string GetViewsPath()
+		private string EnsureDirectoryExists(string directoryPath, string directoryName)
 		{
-			if (!Directory.Exists(_arguments.Views))
-				throw new DirectoryNotFoundException("Views folder not found: " + _arguments.Views);
-			return _arguments.Views;
+			if (!Directory.Exists(directoryPath))
+				throw new DirectoryNotFoundException(string.Format("{0} folder not found: {1}", directoryName, directoryPath));
+			return directoryPath;
 		}
 
 		private string GetOutputDllFullPath()
 		{
-			if (!Directory.Exists(_arguments.OutputPath))
-				throw new DirectoryNotFoundException("Output folder not found: " + _arguments.OutputPath);
-			return Path.Combine(_arguments.OutputPath, _arguments.OutputName);
+			return Path.Combine(EnsureDirectoryExists(_arguments.OutputPath, "Output"), _arguments.OutputName);
 		}
 
 		private static void DescribeSparkViews(SparkBatchDescriptor batch, Assembly sourceAsm)
