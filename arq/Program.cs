@@ -43,7 +43,9 @@ namespace VersionOne.arq
 			{
 				while (ex != null)
 				{
+					Console.ForegroundColor = ConsoleColor.Red;
 					Console.WriteLine(ex.GetType() + ": " + ex.Message);
+					Console.ResetColor();
 					Console.WriteLine(ex.StackTrace);
 					ex = ex.InnerException;
 				}
