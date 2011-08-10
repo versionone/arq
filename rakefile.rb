@@ -12,7 +12,7 @@ desc "Compiles the solution."
 msbuild :compile do |msb|
   
   msb.properties(
-    :configuration => 'debug'
+    :configuration => @build[:config]
     )
   msb.verbosity = "minimal"
   msb.targets :Rebuild
@@ -34,4 +34,8 @@ task :publish, :path do |t, args|
 
   mkdir_p destination
   cp_r File.join(@build[:binaries], @build[:config], '.'), destination
+end
+
+task :release do
+	@build[:config] = 'release'
 end
