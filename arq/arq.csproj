@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arguments.cs" />
+    <Compile Include="AutoMasterDescriptorBuilder.cs" />
     <Compile Include="CompileInvoker.cs" />
     <Compile Include="MadProps\AppArgs.cs" />
     <Compile Include="MadProps\DisplayAttribute.cs">

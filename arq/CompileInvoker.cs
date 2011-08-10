@@ -47,19 +47,11 @@ namespace VersionOne.arq
 			                       	};
 			var batch = new SparkBatchDescriptor(GetOutputDllFullPath());
 			batch.FromAssembly(sourceAsm);
+			
 			DescribeSparkViews(batch, sourceAsm);
+			DescribeCustomSparkViews(batch, sourceAsm);
 
-			string rules = _arguments.Rules;
-			if (rules != null)
-			{
-				var rulesTypeName = rules.Substring(0, rules.LastIndexOf('.'));
-				var rulesMethodName = rules.Substring(rules.LastIndexOf('.') + 1);
-				var rulesType = sourceAsm.GetType(rulesTypeName, true);
-				rulesType.InvokeMember(rulesMethodName, BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod, null, null, new object[] { batch });
-				
-			}
-
-			sparkViewFactory.DescriptorBuilder = new Builder(sparkViewFactory.Engine);
+			sparkViewFactory.DescriptorBuilder = new AutoMasterDescriptorBuilder(sparkViewFactory.Engine);
 
 			try
 			{
@@ -69,6 +61,19 @@ namespace VersionOne.arq
 			{
 				File.WriteAllText("SparkCompile.log.txt", e.Message);
 				throw new Exception("Compilation failed.  See log file for details", e);
+			}
+		}
+
+		private void DescribeCustomSparkViews(SparkBatchDescriptor batch, Assembly sourceAsm)
+		{
+			string rules = _arguments.Rules;
+			if (rules != null)
+			{
+				var rulesTypeName = rules.Substring(0, rules.LastIndexOf('.'));
+				var rulesMethodName = rules.Substring(rules.LastIndexOf('.') + 1);
+				var rulesType = sourceAsm.GetType(rulesTypeName, true);
+				rulesType.InvokeMember(rulesMethodName, BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod, null,
+				                       null, new object[] {batch});
 			}
 		}
 
@@ -106,20 +111,5 @@ namespace VersionOne.arq
 				.Where(type => type.IsSubclassOf(typeof (Controller))).ToList()
 				.ForEach(controllerType => batch.For(controllerType));
 		}
-	}
-
-	internal class Builder : DefaultDescriptorBuilder
-	{
-		public Builder(ISparkViewEngine engine) : base(engine){}
-
-		public override SparkViewDescriptor BuildDescriptor(BuildDescriptorParams buildDescriptorParams, System.Collections.Generic.ICollection<string> searchedLocations)
-		{
-			var newParams = new BuildDescriptorParams(buildDescriptorParams.TargetNamespace, buildDescriptorParams.ControllerName,
-			                          buildDescriptorParams.ViewName, buildDescriptorParams.MasterName, true,
-			                          buildDescriptorParams.Extra);
-
-			return base.BuildDescriptor(newParams, searchedLocations);
-		}
-		
 	}
 }
