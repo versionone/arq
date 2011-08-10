@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Mvc;
 using Spark;
+using Spark.Compiler;
 using Spark.FileSystem;
 using Spark.Web.Mvc;
 
@@ -57,10 +58,10 @@ namespace VersionOne.arq
 			{
 				sparkViewFactory.Precompile(batch);
 			}
-			catch (Exception e)
+			catch (CompilerException e)
 			{
-				File.WriteAllText("SparkCompile.log.txt", e.Message);
-				throw new Exception("Compilation failed.  See log file for details", e);
+				File.WriteAllText("arq.CompilerException.txt", e.Message);
+				throw new CompilerException(e.Message.FirstLine() + "\nSee arq.CompilerException.txt for full description");
 			}
 		}
 
