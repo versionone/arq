@@ -22,8 +22,10 @@ namespace VersionOne.arq
 			}
 			catch (Exception ex)
 			{
+				Console.ForegroundColor = ConsoleColor.Yellow;
 				Console.WriteLine(ex.Message);
 				Console.WriteLine();
+				Console.ResetColor();
 				var usage = AppArgs.HelpFor<Arguments>();
 				Console.Write(usage);
 
@@ -45,8 +47,9 @@ namespace VersionOne.arq
 				{
 					Console.ForegroundColor = ConsoleColor.Red;
 					Console.WriteLine(ex.GetType() + ": " + ex.Message);
-					Console.ResetColor();
+					Console.ForegroundColor = ConsoleColor.Gray;
 					Console.WriteLine(ex.StackTrace);
+					Console.ResetColor();
 					ex = ex.InnerException;
 				}
 				return 2;
